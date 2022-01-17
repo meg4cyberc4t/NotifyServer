@@ -1,8 +1,48 @@
 version: '3.4'
 
 services:
-  notify-server:
+  server:
     image: ${DOCKER_REGISTRY-}notify-server
     build:
       context: .
       dockerfile: Dockerfile
+    command: ./wait-for-postgres.sh sql dotnet NotifyServer.dll
+    networks:
+      bridge:
+        ipv4_address: 10.10.10.3
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    expose:
+      - "80:80"
+      - "443:443"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - sql
+    
+  sql:
+    restart: always
+    image: postgres:latest
+    #    volumes:
+    #      - /var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=SERVERPASSWORD
+      - POSTGRES_USER=SERVER
+      - POSTGRES_DB=SERVER
+      - PGDATA=./.database/postgres/data
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    networks:
+      bridge:
+        ipv4_address: 10.10.10.2
+
+networks:
+  bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.1
