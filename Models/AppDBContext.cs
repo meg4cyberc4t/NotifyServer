@@ -14,9 +14,6 @@ namespace NotifyServer.Models
         protected new void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // modelBuilder.Entity<NotifyUser>().HasData(
-            //     new NotifyUser("localid"));
-
             modelBuilder.Entity<NotifyUser>().HasKey("Id");
         }
     }

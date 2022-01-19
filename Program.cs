@@ -2,7 +2,6 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using NotifyServer.Migrations;
 using NotifyServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,9 +16,8 @@ var defaultApp = FirebaseApp.Create(new AppOptions()
 });
 
 builder.Services.AddDbContext<AppDbContext>(optionsAction: options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.MigrationsAssembly()));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-Database.SetInitializer(new MigrateDatabaseToLatestVersion<AppDbContext, InitialCreate>());
 builder.Services.AddScoped<INotifyUserRepository, NotifyUserRepository>();
 
 var app = builder.Build();
