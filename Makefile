@@ -1,4 +1,4 @@
-start:
+run:
 	docker-compose up --build
 	
 down: 
