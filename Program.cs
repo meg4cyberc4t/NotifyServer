@@ -1,5 +1,9 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using NotifyServer.Migrations;
+using NotifyServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +16,19 @@ var defaultApp = FirebaseApp.Create(new AppOptions()
     Credential = GoogleCredential.FromFile("notify-69147-firebase-adminsdk-uwamm-643fdf9d38.json"),
 });
 
+builder.Services.AddDbContext<AppDbContext>(optionsAction: options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), optionsBuilder => optionsBuilder.MigrationsAssembly()));
+
+Database.SetInitializer(new MigrateDatabaseToLatestVersion<AppDbContext, InitialCreate>());
+builder.Services.AddScoped<INotifyUserRepository, NotifyUserRepository>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
