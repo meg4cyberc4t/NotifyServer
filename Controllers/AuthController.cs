@@ -1,22 +1,24 @@
+using FirebaseAdmin;
+using FirebaseAdmin.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NotifyServer.Models;
 
 namespace NotifyServer.Controllers;
 
+[Route("auth/")]
+[Authorize]
 public class AuthController : Controller
 {
     public AuthController(AppDbContext context)
     {
-        // _context = context;
-        _userRepository = new NotifyUserRepository(context);
     }
-    // private readonly AppDbContext  _context;
-    private readonly INotifyUserRepository _userRepository;
 
-    [HttpGet("{uid}", Name = "GetById")]
-    public async Task<ActionResult<NotifyUser>> Get(string uid)
+
+    [HttpGet("/auth/hello", Name = "Test")]
+    public ActionResult<string?> Test()
     {
-        var item = await _userRepository.Get(uid);
-        return item == null ? NotFound() : item;
+        return "You authorized!";
     }
 }
