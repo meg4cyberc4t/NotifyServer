@@ -36,10 +36,12 @@ builder.Services.AddSwaggerGen(setup =>
         {jwtSecurityScheme, Array.Empty<string>()}
     });
 });
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = GoogleCredential.FromFile("notify-69147-firebase-adminsdk-uwamm-643fdf9d38.json"),
-});
+
+builder.Services.AddSingleton<FirebaseApp>(
+    _ => FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromFile("notify-69147-firebase-adminsdk-uwamm-643fdf9d38.json"),
+    }));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
