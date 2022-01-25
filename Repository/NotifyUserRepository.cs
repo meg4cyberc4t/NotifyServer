@@ -22,21 +22,28 @@ public class NotifyUserRepository
             .FirstOrDefault(e => e.Id == id);
     }
 
-    public List<NotifyUser> GetAll()
+    public NotifyUser? GetByForgeinUid(string uid)
+    {
+        return _context.Users.FirstOrDefault(e => e.ForgeinUid == uid);
+    }
+
+    public IEnumerable<NotifyUser> GetAll()
     {
         return _context.Users.ToList();
     }
 
-    public EntityEntry<NotifyUser> Create(NotifyUserInput user)
+    public EntityEntry<NotifyUser> Create(NotifyUserInput user, string forgeinUid)
     {
-        EntityEntry<NotifyUser> createdUser = _context.Users.Add(new NotifyUser
+        var (firstname, lastname, color) = user;
+        var createdUser = _context.Users.Add(new NotifyUser
         {
             Id = Guid.NewGuid(),
-            Firstname = user.Firstname,
-            Lastname = user.Lastname,
-            Color = user.Color,
+            Firstname = firstname,
+            Lastname = lastname,
+            Color = color,
             Subscribers = new List<NotifyUser>(),
             Subscriptions = new List<NotifyUser>(),
+            ForgeinUid = forgeinUid,
         });
         _context.SaveChanges();
         return createdUser;
@@ -44,7 +51,7 @@ public class NotifyUserRepository
 
     public void Put(NotifyUserQuick updates)
     {
-        NotifyUser? user = _context.Users.First(e => e.Id == updates.Id);
+        var user = _context.Users.FirstOrDefault(e => e.Id == updates.Id)!;
         user.Color = updates.Color;
         user.Firstname = updates.Firstname;
         user.Lastname = updates.Lastname;
@@ -61,6 +68,7 @@ public class NotifyUserRepository
         {
             return;
         }
+
         if (fromUser.Subscribers.Contains(toUser) || toUser.Subscriptions.Contains(fromUser))
         {
             toUser.Subscriptions.Remove(fromUser);
@@ -71,6 +79,7 @@ public class NotifyUserRepository
             toUser.Subscriptions.Add(fromUser);
             fromUser.Subscribers.Add(fromUser);
         }
+
         _context.SaveChanges();
     }
 }

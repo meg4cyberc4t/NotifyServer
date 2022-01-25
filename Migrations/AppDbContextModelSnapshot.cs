@@ -36,6 +36,10 @@ namespace NotifyServer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("ForgeinUid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Lastname")
                         .IsRequired()
                         .HasMaxLength(50)

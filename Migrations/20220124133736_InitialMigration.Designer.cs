@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotifyServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220123211443_InitialMigration")]
+    [Migration("20220124133736_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,10 @@ namespace NotifyServer.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ForgeinUid")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Lastname")
                         .IsRequired()

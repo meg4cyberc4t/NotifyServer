@@ -1,31 +1,26 @@
-using System.Formats.Asn1;
-using FirebaseAdmin;
-using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NotifyServer.Models;
 using NotifyServer.Repository;
 
 namespace NotifyServer.Controllers;
 
-// [Authorize]
+[Authorize]
 [Route("users")]
 [ApiController]
 public class UserController : ControllerBase
 {
-    readonly NotifyUserRepository _userRepository;
+    private readonly NotifyUserRepository _userRepository;
 
     public UserController(AppDbContext context)
     {
         _userRepository = new NotifyUserRepository(context);
     }
 
-
     [HttpGet]
     public IEnumerable<NotifyUserQuick> GetAll()
     {
+        Console.WriteLine(HttpContext.Items["User"]);
         return _userRepository.GetAll().Select(e => e.ToNotifyUserQuick());
     }
 
@@ -41,16 +36,16 @@ public class UserController : ControllerBase
     [HttpPost]
     public ActionResult<NotifyUser> Create([FromBody] NotifyUserInput user)
     {
-        return Ok(_userRepository.Create(user).Entity);
+        var uid = HttpContext.User.Claims.ToList()[4].Value;
+        return Ok(_userRepository.Create(user, uid).Entity);
     }
 
     [HttpPut]
     public ActionResult<NotifyUser> Put([FromBody] NotifyUserInput updatedUser)
     {
-        var id = Guid.Parse("b85dc89a-44c4-43e9-91a4-73cd2429f9f6");
-        NotifyUser? userRepo = _userRepository.Get(id);
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         _userRepository.Put(new NotifyUserQuick(
-            Id: id,
+            Id: user.Id,
             Firstname: updatedUser.Firstname,
             Lastname: updatedUser.Lastname,
             Color: updatedUser.Color
@@ -81,11 +76,12 @@ public class UserController : ControllerBase
 
         return Ok(user.Subscribers);
     }
+
     [HttpPost("change_subscription/{id:guid}")]
     public IActionResult ChangeSubscription(Guid id)
     {
-        var user = Guid.Parse("b85dc89a-44c4-43e9-91a4-73cd2429f9f6");
-        _userRepository.ChangeSubscription(user, id);
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        _userRepository.ChangeSubscription(user.Id, id);
         return NoContent();
     }
 }

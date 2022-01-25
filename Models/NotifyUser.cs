@@ -1,10 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
 
 namespace NotifyServer.Models;
 
@@ -38,6 +32,8 @@ public class NotifyUser
     public int Color { get; set; }
     public ICollection<NotifyUser> Subscriptions { get; set; } = new List<NotifyUser>();
     public ICollection<NotifyUser> Subscribers { get; set; } = new List<NotifyUser>();
+
+    public string ForgeinUid { get; set; } = null!;
 
     public NotifyUserQuick ToNotifyUserQuick()
     {

@@ -1,13 +1,16 @@
-using System.Text.Json.Serialization;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NotifyServer.Controllers;
+using NotifyServer.Middleware;
 using NotifyServer.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -30,10 +33,9 @@ builder.Services.AddSwaggerGen(setup =>
     setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
     setup.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        { jwtSecurityScheme, Array.Empty<string>() }
+        {jwtSecurityScheme, Array.Empty<string>()}
     });
 });
-
 FirebaseApp.Create(new AppOptions()
 {
     Credential = GoogleCredential.FromFile("notify-69147-firebase-adminsdk-uwamm-643fdf9d38.json"),
@@ -58,25 +60,30 @@ builder.Services.AddDbContext<AppDbContext>(
     options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddTransient<FactoryCheckCreatingUserMiddleware>();
+
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-);
-// builder.Services.AddControllersWithViews()
-//     .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    );
 
 var app = builder.Build();
 
 
+app.UseDeveloperExceptionPage();
+
+// app.UseExceptionHandler("/Error");
+// app.UseHsts();
+
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseWhen(context => !(context.Request.Path.StartsWithSegments("/users") && context.Request.Method == "POST"),
+    appBuilder => { appBuilder.UseMiddleware<FactoryCheckCreatingUserMiddleware>(); });
 
 app.MapControllers();
 
