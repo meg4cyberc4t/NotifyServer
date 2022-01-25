@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotifyServer.Models;
 
@@ -34,6 +35,14 @@ public class NotifyUser
     public ICollection<NotifyUser> Subscribers { get; set; } = new List<NotifyUser>();
 
     public string ForgeinUid { get; set; } = null!;
+
+    public ICollection<NotifyFolder> Folders { get; set; } = null!;
+
+    public ICollection<NotifyNotification> Notifications { get; set; } = null!;
+
+    public ICollection<NotifyNotification> NotificationsWhereCreator { get; set; } = null!;
+    public ICollection<NotifyFolder> FolderWhereCreator { get; set; } = null!;
+
 
     public NotifyUserQuick ToNotifyUserQuick()
     {
