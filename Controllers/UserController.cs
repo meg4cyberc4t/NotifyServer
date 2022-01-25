@@ -34,14 +34,14 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<NotifyUser> Create([FromBody] NotifyUserInput user)
+    public ActionResult<NotifyUserDetailed> Create([FromBody] NotifyUserInput user)
     {
         var uid = HttpContext.User.Claims.ToList()[4].Value;
-        return Ok(_userRepository.Create(user, uid).Entity);
+        return Ok(_userRepository.Create(user, uid).Entity.ToNotifyUserDetailed());
     }
 
     [HttpPut]
-    public ActionResult<NotifyUser> Put([FromBody] NotifyUserInput updatedUser)
+    public ActionResult<NotifyUserQuick> Put([FromBody] NotifyUserInput updatedUser)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         _userRepository.Put(new NotifyUserQuick(
@@ -54,7 +54,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id:guid}/subscriptions")]
-    public ActionResult<IEnumerable<NotifyUser>> Subscriptions(Guid id)
+    public ActionResult<IEnumerable<NotifyUserQuick>> Subscriptions(Guid id)
     {
         var user = _userRepository.Get(id);
         if (user == null)
@@ -62,11 +62,11 @@ public class UserController : ControllerBase
             return NotFound();
         }
 
-        return Ok(user.Subscriptions);
+        return Ok(user.Subscriptions.Select(e => e.ToNotifyUserQuick()));
     }
 
     [HttpGet("{id:guid}/subscribers")]
-    public ActionResult<IEnumerable<NotifyUser>> Subscribers(Guid id)
+    public ActionResult<IEnumerable<NotifyUserQuick>> Subscribers(Guid id)
     {
         var user = _userRepository.Get(id);
         if (user == null)
@@ -74,7 +74,7 @@ public class UserController : ControllerBase
             return NotFound();
         }
 
-        return Ok(user.Subscribers);
+        return Ok(user.Subscribers.Select(e => e.ToNotifyUserQuick()));
     }
 
     [HttpPost("change_subscription/{id:guid}")]
