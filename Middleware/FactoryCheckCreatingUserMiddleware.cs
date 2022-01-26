@@ -18,6 +18,7 @@ public class FactoryCheckCreatingUserMiddleware : IMiddleware
         try
         {
             var uid = context.User.Claims.ToList()[4].Value;
+            Console.WriteLine(uid);
             var user = await _db.Users.FirstAsync(e => e.ForgeinUid == uid);
             context.Items.Add("User", user);
         }
