@@ -37,10 +37,9 @@ public class NotificationController : Controller
         if (!ntf.Participants.Contains(user))
         {
             return Forbid();
-
         }
-        return Ok(ntf.ToNotifyNotificationDetailed());
 
+        return Ok(ntf.ToNotifyNotificationDetailed());
     }
 
     [HttpPost]
@@ -48,5 +47,24 @@ public class NotificationController : Controller
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         return Ok(_notificationRepository.Create(user, input).Entity.ToNotifyNotificationDetailed());
+    }
+
+    [HttpDelete("{id:guid}", Name = "DeleteNotificationById")]
+    public ActionResult Delete(Guid id)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var notification = _notificationRepository.Get(id);
+        if (notification == null)
+        {
+            return NotFound();
+        }
+
+        if (!notification.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+
+        _notificationRepository.Delete(notification);
+        return NoContent();
     }
 }
