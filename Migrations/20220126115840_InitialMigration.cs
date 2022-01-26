@@ -78,6 +78,7 @@ namespace NotifyServer.Migrations
                     RepeatMode = table.Column<int>(type: "integer", nullable: false),
                     Deadline = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UniqueClaim = table.Column<int>(type: "integer", nullable: false),
                     NotifyFolderId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
