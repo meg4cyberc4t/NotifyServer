@@ -20,7 +20,6 @@ public class UserController : ControllerBase
     [HttpGet]
     public IEnumerable<NotifyUserQuick> GetAll()
     {
-        Console.WriteLine(HttpContext.Items["User"]);
         return _userRepository.GetAll().Select(e => e.ToNotifyUserQuick());
     }
 
