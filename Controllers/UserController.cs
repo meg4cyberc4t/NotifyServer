@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NotifyServer.Models;
 using NotifyServer.Repository;
 
@@ -10,52 +11,76 @@ namespace NotifyServer.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private readonly NotifyUserRepository _userRepository;
+    private readonly INotifyUserRepository _users;
 
     public UserController(AppDbContext context)
     {
-        _userRepository = new NotifyUserRepository(context);
+        _users = new NotifyUserReposoitory(context);
     }
 
     [HttpGet]
-    public IEnumerable<NotifyUserQuick> GetAll()
+    public async Task<IEnumerable<NotifyUserQuick>> GetAll()
     {
-        return _userRepository.GetAll().Select(e => e.ToNotifyUserQuick());
+        var users = await _users.GetUsersAsync();
+        return users.Select(e => e.ToNotifyUserQuick());
     }
 
     [HttpGet("{id:guid}", Name = "GetUserById")]
-    public ActionResult<NotifyUserDetailed> Get(Guid id)
+    public async Task<ActionResult<NotifyUserDetailed>> Get(Guid id)
     {
-        NotifyUser? user = _userRepository.Get(id);
-        return user == null
-            ? NotFound()
-            : Ok(user.ToNotifyUserDetailed());
+        var user = await _users.GetUserAsync(id);
+        if (user == null)
+        {
+            return NotFound();
+        }
+        else
+        {
+            return Ok(user.ToNotifyUserDetailed());
+        }
     }
 
     [HttpPost]
-    public ActionResult<NotifyUserDetailed> Create([FromBody] NotifyUserInput user)
+    public async Task<ActionResult<NotifyUserDetailed>> Create([FromBody] NotifyUserInput input)
     {
         var uid = HttpContext.User.Claims.ToList()[4].Value;
-        return Ok(_userRepository.Create(user, uid).Entity.ToNotifyUserDetailed());
+        var user = await _users.GetUserByForgeinUidAsync(uid);
+        if (user != null) return BadRequest();
+        var newUser = new NotifyUser
+        {
+            Id = Guid.NewGuid(),
+            Firstname = input.Firstname,
+            Lastname = input.Lastname,
+            Color = input.Color,
+            Subscribers = new List<NotifyUser>(),
+            Subscriptions = new List<NotifyUser>(),
+            ForgeinUid = uid
+        };
+        await _users.CreateUserAsync(newUser);
+        return NoContent();
+
     }
 
     [HttpPut]
-    public ActionResult<NotifyUserQuick> Put([FromBody] NotifyUserInput updatedUser)
+    public async Task<ActionResult<NotifyUserQuick>> Put([FromBody] NotifyUserInput updatedUser)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        _userRepository.Put(new NotifyUserQuick(
-            Id: user.Id,
-            Firstname: updatedUser.Firstname,
-            Lastname: updatedUser.Lastname,
-            Color: updatedUser.Color
-        ));
+        user = await _users.GetUserAsync(user.Id);
+        if (user == null)
+        {
+            return BadRequest();
+        }
+
+        user.Color = updatedUser.Color;
+        user.Firstname = updatedUser.Firstname;
+        user.Lastname = updatedUser.Lastname;
+        await _users.UpdateUserAsync(user);
         return NoContent();
     }
 
     [HttpGet("{id:guid}/subscriptions")]
-    public ActionResult<IEnumerable<NotifyUserQuick>> Subscriptions(Guid id)
+    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscriptions(Guid id)
     {
-        var user = _userRepository.Get(id);
+        var user = await _users.GetUserAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -65,9 +90,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id:guid}/subscribers")]
-    public ActionResult<IEnumerable<NotifyUserQuick>> Subscribers(Guid id)
+    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscribers(Guid id)
     {
-        var user = _userRepository.Get(id);
+        var user = await _users.GetUserAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -77,10 +102,35 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("change_subscription/{id:guid}")]
-    public IActionResult ChangeSubscription(Guid id)
+    public async Task<IActionResult> ChangeSubscription(Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        _userRepository.ChangeSubscription(user.Id, id);
+        if (user.Id.Equals(id))
+        {
+            return BadRequest();
+        }
+
+        var fromUser = await _users.GetUserAsync(user.Id);
+        var toUser = await _users.GetUserAsync(id);
+        if (fromUser == null || toUser == null)
+        {
+            return BadRequest();
+        }
+
+        if (fromUser.Subscribers.Contains(toUser) || toUser.Subscriptions.Contains(fromUser))
+        {
+            toUser.Subscriptions.Remove(fromUser);
+            fromUser.Subscribers.Remove(toUser);
+        }
+        else
+        {
+            toUser.Subscriptions.Add(fromUser);
+            fromUser.Subscribers.Add(toUser);
+        }
+
+        await _users.UpdateUserAsync(toUser);
+        await _users.UpdateUserAsync(fromUser);
+
         return NoContent();
     }
 }
