@@ -10,25 +10,28 @@ namespace NotifyServer.Controllers;
 [ApiController]
 public class NotificationController : Controller
 {
-    private readonly NotifyNotificationRepository _notificationRepository;
+    private readonly INotifyNotificationRepository _notificationRepository;
+    private readonly INotifyUserRepository _userRepository;
 
     public NotificationController(AppDbContext context)
     {
         _notificationRepository = new NotifyNotificationRepository(context);
+        _userRepository = new NotifyUserReposoitory(context);
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<NotifyNotificationDetailed>> GetMyNotifications()
+    public async Task<ActionResult<IEnumerable<NotifyNotificationDetailed>>> GetMyNotifications()
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        return Ok(_notificationRepository.GetUserNotifications(user).Select(e => e.ToNotifyNotificationDetailed()));
+        var ntfs = await _notificationRepository.GetNotificationsAsync(user);
+        return Ok(ntfs.Select(e => e.ToNotifyNotificationDetailed()));
     }
 
     [HttpGet("{id:guid}", Name = "GetNotificationById")]
-    public ActionResult<NotifyNotificationDetailed> Get(Guid id)
+    public async Task<ActionResult<NotifyNotificationDetailed>> Get(Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var ntf = _notificationRepository.Get(id);
+        var ntf = await _notificationRepository.GetNotificationAsync(id);
         if (ntf == null)
         {
             return NotFound();
@@ -43,17 +46,30 @@ public class NotificationController : Controller
     }
 
     [HttpPost]
-    public ActionResult<NotifyNotificationDetailed> Create([FromBody] NotifyNotificationInput input)
+    public async Task<ActionResult<NotifyNotificationDetailed>> Create([FromBody] NotifyNotificationInput input)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        return Ok(_notificationRepository.Create(user, input).Entity.ToNotifyNotificationDetailed());
+        var ntf = new NotifyNotification()
+        {
+            Id = Guid.NewGuid(),
+            Title = input.Title,
+            Description = input.Description,
+            Deadline = input.Deadline,
+            RepeatMode = input.RepeatMode,
+            Creator = user,
+            Important = input.Important,
+            Participants = new List<NotifyUser>() {user},
+            UniqueClaim = new Random().Next()
+        };
+        await _notificationRepository.CreateNotificationAsync(ntf);
+        return NoContent();
     }
 
     [HttpDelete("{id:guid}", Name = "DeleteNotificationById")]
-    public ActionResult Delete(Guid id)
+    public async Task<ActionResult> Delete(Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var notification = _notificationRepository.Get(id);
+        var notification = await _notificationRepository.GetNotificationAsync(id);
         if (notification == null)
         {
             return NotFound();
@@ -64,7 +80,81 @@ public class NotificationController : Controller
             return Forbid();
         }
 
-        _notificationRepository.Delete(notification);
+        await _notificationRepository.DeleteNotificationAsync(notification);
+        return NoContent();
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<NotifyNotificationDetailed>> Put(Guid id, [FromBody] NotifyNotificationInput updatedNtf)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var notification = await _notificationRepository.GetNotificationAsync(id: id);
+        if (notification == null)
+        {
+            return NotFound();
+        }
+        if (!notification.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+        notification.Deadline = updatedNtf.Deadline;
+        notification.Title = updatedNtf.Title;
+        notification.Description = updatedNtf.Description;
+        notification.RepeatMode = updatedNtf.RepeatMode;
+        notification.Important = updatedNtf.Important;
+        await _notificationRepository.UpdateNotificationAsync(notification);
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/invite")]
+    public async Task<ActionResult> Invite(Guid id, [FromQuery] Guid inviteUserId)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var notification = await _notificationRepository.GetNotificationAsync(id: id);
+        var inviteUser = await _userRepository.GetUserAsync(inviteUserId);
+
+        if (notification == null || inviteUser == null)
+        {
+            return NotFound();
+        }
+
+        if (!(notification.Participants.Contains(user) || notification.Creator == user || !user.Subscribers.Contains(inviteUser)))
+        {
+            return Forbid();
+        }
+
+        if (!notification.Participants.Contains(inviteUser))
+        {
+            notification.Participants.Add(inviteUser);
+        }
+
+        await _notificationRepository.UpdateNotificationAsync(notification);
+        return NoContent();
+    }
+
+    [HttpPost("{id:guid}/exclude")]
+    public async Task<ActionResult> Exclude(Guid id, [FromQuery] Guid excludeUserId)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var notification = await _notificationRepository.GetNotificationAsync(id: id);
+        var inviteUser = await _userRepository.GetUserAsync(excludeUserId);
+
+        if (notification == null || inviteUser == null)
+        {
+            return NotFound();
+        }
+
+        if (!(notification.Participants.Contains(user) || notification.Creator == user))
+        {
+            return Forbid();
+        }
+
+        if (notification.Participants.Contains(inviteUser))
+        {
+            notification.Participants.Remove(inviteUser);
+        }
+        await _notificationRepository.UpdateNotificationAsync(notification);
+
         return NoContent();
     }
 }
