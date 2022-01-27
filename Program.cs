@@ -72,10 +72,10 @@ builder.Services.AddControllersWithViews()
 var app = builder.Build();
 
 
-app.UseDeveloperExceptionPage();
+// app.UseDeveloperExceptionPage();
 
-// app.UseExceptionHandler("/Error");
-// app.UseHsts();
+app.UseExceptionHandler("/Error");
+app.UseHsts();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -84,7 +84,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseWhen(context => !(context.Request.Path.StartsWithSegments("/users") && context.Request.Method == "POST"),
+app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Request.Method == "POST"),
     appBuilder => { appBuilder.UseMiddleware<FactoryCheckCreatingUserMiddleware>(); });
 
 app.MapControllers();
