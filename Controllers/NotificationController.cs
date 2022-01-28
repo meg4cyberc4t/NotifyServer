@@ -45,6 +45,24 @@ public class NotificationController : Controller
         return Ok(ntf.ToNotifyNotificationDetailed());
     }
 
+    [HttpGet("{id:guid}/participants", Name = "GetParticipantsById")]
+    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> GetParticipantsById(Guid id)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var ntf = await _notificationRepository.GetNotificationAsync(id);
+        if (ntf == null)
+        {
+            return NotFound();
+        }
+
+        if (!ntf.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+
+        return Ok(ntf.Participants.Select(e => e.ToNotifyUserQuick()));
+    }
+
     [HttpPost]
     public async Task<ActionResult<NotifyNotificationDetailed>> Create([FromBody] NotifyNotificationInput input)
     {

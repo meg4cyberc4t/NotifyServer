@@ -26,6 +26,7 @@ public record NotifyNotificationDetailed(
     bool Important,
     RepeatMode RepeatMode,
     DateTime Deadline,
+    int ParticipantsCount,
     NotifyUserQuick Creator,
     int UniqueClaim
 );
@@ -53,7 +54,8 @@ public class NotifyNotification
             RepeatMode: RepeatMode,
             Deadline: Deadline,
             Creator: Creator.ToNotifyUserQuick(),
-            UniqueClaim: UniqueClaim
+            UniqueClaim: UniqueClaim,
+            ParticipantsCount: Participants.Count
         );
     }
 }
