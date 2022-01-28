@@ -80,7 +80,7 @@ public class NotificationController : Controller
             UniqueClaim = new Random().Next()
         };
         await _notificationRepository.CreateNotificationAsync(ntf);
-        return NoContent();
+        return Ok(ntf.ToNotifyNotificationDetailed());
     }
 
     [HttpDelete("{id:guid}", Name = "DeleteNotificationById")]
@@ -103,7 +103,8 @@ public class NotificationController : Controller
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<NotifyNotificationDetailed>> Put(Guid id, [FromBody] NotifyNotificationInput updatedNtf)
+    public async Task<ActionResult<NotifyNotificationDetailed>> Put(Guid id,
+        [FromBody] NotifyNotificationInput updatedNtf)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var notification = await _notificationRepository.GetNotificationAsync(id: id);
@@ -111,17 +112,19 @@ public class NotificationController : Controller
         {
             return NotFound();
         }
+
         if (!notification.Participants.Contains(user))
         {
             return Forbid();
         }
+
         notification.Deadline = updatedNtf.Deadline;
         notification.Title = updatedNtf.Title;
         notification.Description = updatedNtf.Description;
         notification.RepeatMode = updatedNtf.RepeatMode;
         notification.Important = updatedNtf.Important;
         await _notificationRepository.UpdateNotificationAsync(notification);
-        return NoContent();
+        return Ok(notification.ToNotifyNotificationDetailed());
     }
 
     [HttpPost("{id:guid}/invite")]
@@ -136,7 +139,8 @@ public class NotificationController : Controller
             return BadRequest();
         }
 
-        if (!(notification.Participants.Contains(user) || notification.Creator == user || !user.Subscribers.Contains(inviteUser)))
+        if (!(notification.Participants.Contains(user) || notification.Creator == user ||
+              !user.Subscribers.Contains(inviteUser)))
         {
             return Forbid();
         }
@@ -171,6 +175,7 @@ public class NotificationController : Controller
         {
             notification.Participants.Remove(inviteUser);
         }
+
         await _notificationRepository.UpdateNotificationAsync(notification);
 
         return NoContent();

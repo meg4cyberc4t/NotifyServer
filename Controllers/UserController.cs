@@ -33,10 +33,8 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-        else
-        {
-            return Ok(user.ToNotifyUserDetailed());
-        }
+
+        return Ok(user.ToNotifyUserDetailed());
     }
 
     [HttpPost]
@@ -56,8 +54,7 @@ public class UserController : ControllerBase
             ForgeinUid = uid
         };
         await _users.CreateUserAsync(newUser);
-        return NoContent();
-
+        return Ok(newUser.ToNotifyUserDetailed());
     }
 
     [HttpPut]
@@ -74,7 +71,7 @@ public class UserController : ControllerBase
         user.Firstname = updatedUser.Firstname;
         user.Lastname = updatedUser.Lastname;
         await _users.UpdateUserAsync(user);
-        return NoContent();
+        return Ok(user.ToNotifyUserDetailed());
     }
 
     [HttpGet("{id:guid}/subscriptions")]

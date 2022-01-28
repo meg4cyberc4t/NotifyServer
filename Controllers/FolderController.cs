@@ -98,7 +98,7 @@ public class FolderController : Controller
             NotificationsList = new List<NotifyNotification>(),
         };
         await _folderRepository.CreateFolderAsync(folder);
-        return NoContent();
+        return Ok(folder.ToNotifyFolderDetailed());
     }
 
     [HttpDelete("{id:guid}", Name = "DeleteFolderById")]
@@ -139,7 +139,7 @@ public class FolderController : Controller
         folder.Title = updatedFolder.Title;
         folder.Description = updatedFolder.Description;
         await _folderRepository.UpdateFolderAsync(folder);
-        return NoContent();
+        return Ok(folder.ToNotifyFolderDetailed());
     }
 
     [HttpPost("{id:guid}/invite")]
