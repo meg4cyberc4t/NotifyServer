@@ -72,10 +72,10 @@ builder.Services.AddControllersWithViews()
 var app = builder.Build();
 
 
-// app.UseDeveloperExceptionPage();
+app.UseDeveloperExceptionPage();
 
-app.UseExceptionHandler("/Error");
-app.UseHsts();
+// app.UseExceptionHandler("/Error");
+// app.UseHsts();
 
 app.UseSwagger();
 app.UseSwaggerUI();

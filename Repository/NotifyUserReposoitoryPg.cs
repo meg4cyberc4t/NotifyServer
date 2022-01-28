@@ -4,11 +4,11 @@ using NotifyServer.Models;
 
 namespace NotifyServer.Repository;
 
-public class NotifyUserReposoitory : INotifyUserRepository
+public class NotifyUserReposoitoryPg : INotifyUserRepository
 {
     private readonly AppDbContext _context;
 
-    public NotifyUserReposoitory(AppDbContext context)
+    public NotifyUserReposoitoryPg(AppDbContext context)
     {
         _context = context;
     }

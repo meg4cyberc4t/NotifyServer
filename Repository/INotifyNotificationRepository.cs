@@ -12,6 +12,5 @@ public interface INotifyNotificationRepository
 
     Task DeleteNotificationAsync(NotifyNotification item);
 
-
     Task UpdateNotificationAsync(NotifyNotification items);
 }

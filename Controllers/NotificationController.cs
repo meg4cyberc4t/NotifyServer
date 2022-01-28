@@ -15,8 +15,8 @@ public class NotificationController : Controller
 
     public NotificationController(AppDbContext context)
     {
-        _notificationRepository = new NotifyNotificationRepository(context);
-        _userRepository = new NotifyUserReposoitory(context);
+        _notificationRepository = new NotifyNotificationRepositoryPg(context);
+        _userRepository = new NotifyUserReposoitoryPg(context);
     }
 
     [HttpGet]
@@ -115,7 +115,7 @@ public class NotificationController : Controller
 
         if (notification == null || inviteUser == null)
         {
-            return NotFound();
+            return BadRequest();
         }
 
         if (!(notification.Participants.Contains(user) || notification.Creator == user || !user.Subscribers.Contains(inviteUser)))
@@ -141,7 +141,7 @@ public class NotificationController : Controller
 
         if (notification == null || inviteUser == null)
         {
-            return NotFound();
+            return BadRequest();
         }
 
         if (!(notification.Participants.Contains(user) || notification.Creator == user))

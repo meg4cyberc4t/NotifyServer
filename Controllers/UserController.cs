@@ -15,7 +15,7 @@ public class UserController : ControllerBase
 
     public UserController(AppDbContext context)
     {
-        _users = new NotifyUserReposoitory(context);
+        _users = new NotifyUserReposoitoryPg(context);
     }
 
     [HttpGet]
