@@ -24,7 +24,7 @@ public class NotificationController : Controller
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var ntfs = await _notificationRepository.GetNotificationsAsync(user);
-        return Ok(ntfs.Select(e => e.ToNotifyNotificationDetailed()));
+        return Ok(ntfs.Select(e => e.ToNotifyNotificationQuick()));
     }
 
     [HttpGet("{id:guid}", Name = "GetNotificationById")]

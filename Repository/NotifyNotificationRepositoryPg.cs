@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Google.Apis.Util;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +30,15 @@ public class NotifyNotificationRepositoryPg : INotifyNotificationRepository
     {
         var user = await _context.Users
             .Include(e => e.Notifications)
+            .ThenInclude(e => e.Creator)
             .FirstOrDefaultAsync(e => e.Id == input.Id);
         return user!.Notifications;
+    }
+
+    public async Task<IEnumerable<NotifyNotification>> GetNotificationsFromIdsListAsync(List<Guid> ids)
+    {
+        var ntfs = await _context.Notifications.Where(e => ids.Contains(e.Id)).ToListAsync();
+        return ntfs;
     }
 
     public async Task CreateNotificationAsync(NotifyNotification ntf)

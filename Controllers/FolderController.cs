@@ -197,4 +197,52 @@ public class FolderController : Controller
 
         return NoContent();
     }
+
+    [HttpPost("{ntfId:guid}/add_notification")]
+    public async Task<ActionResult> Add(Guid folderId, [FromQuery] List<Guid> listIds)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var folder = await _folderRepository.GetFolderAsync(folderId);
+        if (folder == null)
+        {
+            return BadRequest();
+        }
+
+        if (!folder.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+
+        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(listIds);
+        foreach (var ntf in ntfs)
+        {
+            folder.NotificationsList.Add(ntf);
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("{ntfId:guid}/remove_notification")]
+    public async Task<ActionResult> Remove(Guid folderId, [FromQuery] List<Guid> listIds)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var folder = await _folderRepository.GetFolderAsync(folderId);
+        if (folder == null)
+        {
+            return BadRequest();
+        }
+
+        if (!folder.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+
+        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(listIds);
+        foreach (var ntf in ntfs)
+        {
+            folder.NotificationsList.Remove(ntf);
+        }
+
+        return NoContent();
+    }
 }

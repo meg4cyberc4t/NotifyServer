@@ -19,6 +19,17 @@ public record NotifyNotificationInput(
     [Required] bool Important
 );
 
+public record NotifyNotificationQuick(
+    Guid Id,
+    [StringLength(50)] [Required] string Title,
+    string Description,
+    bool Important,
+    RepeatMode RepeatMode,
+    DateTime Deadline,
+    NotifyUserQuick Creator,
+    int UniqueClaim
+);
+
 public record NotifyNotificationDetailed(
     Guid Id,
     [StringLength(50)] [Required] string Title,
@@ -56,6 +67,20 @@ public class NotifyNotification
             Creator: Creator.ToNotifyUserQuick(),
             UniqueClaim: UniqueClaim,
             ParticipantsCount: Participants.Count
+        );
+    }
+
+    public NotifyNotificationQuick ToNotifyNotificationQuick()
+    {
+        return new NotifyNotificationQuick(
+            Id: Id,
+            Title: Title,
+            Description: Description,
+            Important: Important,
+            RepeatMode: RepeatMode,
+            Deadline: Deadline,
+            Creator: Creator.ToNotifyUserQuick(),
+            UniqueClaim: UniqueClaim
         );
     }
 }
