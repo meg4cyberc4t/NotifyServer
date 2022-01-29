@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace NotifyServer.Models;
 
 public record NotifyUserInput(
-    string Firstname,
-    string Lastname,
-    int Color
+    [StringLength(50)] [Required] string Firstname,
+    [StringLength(50)] [Required] string Lastname,
+    [Required] int Color
 );
 
 public record NotifyUserQuick(
@@ -27,14 +27,14 @@ public record NotifyUserDetailed(
 
 public class NotifyUser
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
     [StringLength(50)] [Required] public string Firstname { get; set; } = null!;
     [StringLength(50)] [Required] public string Lastname { get; set; } = null!;
     public int Color { get; set; }
-    public ICollection<NotifyUser> Subscriptions { get; set; } = new List<NotifyUser>();
-    public ICollection<NotifyUser> Subscribers { get; set; } = new List<NotifyUser>();
+    public ICollection<NotifyUser> Subscriptions { get; init; } = new List<NotifyUser>();
+    public ICollection<NotifyUser> Subscribers { get; init; } = new List<NotifyUser>();
 
-    public string ForgeinUid { get; set; } = null!;
+    public string ForgeinUid { get; init; } = null!;
 
     public ICollection<NotifyFolder> Folders { get; set; } = null!;
 

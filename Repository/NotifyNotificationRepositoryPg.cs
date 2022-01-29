@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Google.Apis.Util;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ public class NotifyNotificationRepositoryPg : INotifyNotificationRepository
     {
         var user = await _context.Users
             .Include(e => e.Notifications)
+            .ThenInclude(e => e.Creator)
             .FirstOrDefaultAsync(e => e.Id == input.Id);
         return user!.Notifications;
     }
