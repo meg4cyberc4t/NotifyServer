@@ -74,7 +74,7 @@ var app = builder.Build();
 app.UseDeveloperExceptionPage();
 
 // app.UseExceptionHandler("/Error");
-// app.UseHsts();
+app.UseHsts();
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -88,4 +88,4 @@ app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Reques
 
 app.MapControllers();
 
-app.Run();
+app.Run("https://185.12.95.190");
