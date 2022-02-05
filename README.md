@@ -1,8 +1,10 @@
 ## NotifyServer
 
-Данный проект находится в разработке.
+`Backend Notify server, works with users, notifications and folders.`</br>
+`Authorization via firebase, database via postgresql.`</br>
+`NET 6 is cool.`</br>
 
-Swagger: http://localhost/swagger/index.html
+#### ! Swagger is built in for this documentation !
 
 ### For developers
 
