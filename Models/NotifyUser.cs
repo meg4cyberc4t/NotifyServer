@@ -6,21 +6,21 @@ namespace NotifyServer.Models;
 public record NotifyUserInput(
     [StringLength(50)] [Required] string Firstname,
     [StringLength(50)] [Required] string Lastname,
-    [Required] int Color
+    [Required] Int64 Color
 );
 
 public record NotifyUserQuick(
     Guid Id,
     string Firstname,
     string Lastname,
-    int Color
+    Int64 Color
 );
 
 public record NotifyUserDetailed(
     Guid Id,
     string Firstname,
     string Lastname,
-    int Color,
+    Int64 Color,
     int SubscriptionsCount,
     int SubscribersCount
 );
@@ -30,7 +30,7 @@ public class NotifyUser
     public Guid Id { get; init; }
     [StringLength(50)] [Required] public string Firstname { get; set; } = null!;
     [StringLength(50)] [Required] public string Lastname { get; set; } = null!;
-    public int Color { get; set; }
+    public Int64 Color { get; set; }
     public ICollection<NotifyUser> Subscriptions { get; init; } = new List<NotifyUser>();
     public ICollection<NotifyUser> Subscribers { get; init; } = new List<NotifyUser>();
 

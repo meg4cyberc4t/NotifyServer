@@ -9,4 +9,5 @@
 ### For developers
 
 For developers
-Before working with the server, create a **private key** in the Firebase cabinet and specify the path to it in `Program.cs`
+Before working with the server, create a **private key** in the Firebase cabinet and specify the path to it in `Program.cs`.<br>
+Start the server via ./Script.sh.<br>

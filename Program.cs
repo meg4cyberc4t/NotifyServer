@@ -1,4 +1,5 @@
 using FirebaseAdmin;
+using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,7 @@ using Microsoft.OpenApi.Models;
 using NotifyServer.Middleware;
 using NotifyServer.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -39,21 +38,21 @@ builder.Services.AddSwaggerGen(setup =>
 builder.Services.AddSingleton<FirebaseApp>(
     _ => FirebaseApp.Create(new AppOptions()
     {
-        Credential = GoogleCredential.FromFile("notify-69147-firebase-adminsdk-uwamm-643fdf9d38.json"),
+        Credential = GoogleCredential.FromFile("notify-eada6-firebase-adminsdk-1f9sn-ce62de8010.json"),
     }));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
-        opt.Authority = builder.Configuration["Jwt:Firebase:ValidIssuer"];
+        opt.Authority = "https://securetoken.google.com/notify-eada6";
         opt.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Firebase:ValidIssuer"],
-            ValidAudience = builder.Configuration["Jwt:Firebase:ValidAudience"]
+            ValidIssuer = "https://securetoken.google.com/notify-eada6",
+            ValidAudience = "notify-eada6"
         };
     });
 
@@ -68,13 +67,20 @@ builder.Services.AddControllersWithViews()
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
     );
 
+
+
 var app = builder.Build();
 
-
-app.UseDeveloperExceptionPage();
-
 // app.UseExceptionHandler("/Error");
-app.UseHsts();
+
+if (builder.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseHsts();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -88,4 +94,6 @@ app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Reques
 
 app.MapControllers();
 
-app.Run("https://185.12.95.190");
+
+app.Run("https://192.168.0.123");
+// app.Run("https://185.12.95.190");
