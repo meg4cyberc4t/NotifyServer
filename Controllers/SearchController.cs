@@ -33,7 +33,7 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_notifications", Name = "SearchFromNotifications")]
-    public async Task<ActionResult<IEnumerable<NotifyNotification>>> SearchFromNotifications([FromQuery] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> SearchFromNotifications([FromQuery] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
