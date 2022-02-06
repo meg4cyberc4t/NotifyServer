@@ -22,7 +22,7 @@ public class UserController : ControllerBase
     public async Task<NotifyUserDetailed> Get()
     {
         var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = await _users.GetUserByForgeinUidAsync(uid);
+        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
         return user.ToNotifyUserDetailed();
     }
 
