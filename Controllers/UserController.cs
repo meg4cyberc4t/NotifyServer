@@ -7,7 +7,7 @@ using NotifyServer.Repository;
 namespace NotifyServer.Controllers;
 
 [Authorize]
-[Route("users")]
+[Route("user")]
 [ApiController]
 public class UserController : ControllerBase
 {
@@ -19,22 +19,11 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<NotifyUserQuick>> GetAll()
+    public async Task<NotifyUserDetailed> Get()
     {
-        var users = await _users.GetUsersAsync();
-        return users.Select(e => e.ToNotifyUserQuick());
-    }
-
-    [HttpGet("{id:guid}", Name = "GetUserById")]
-    public async Task<ActionResult<NotifyUserDetailed>> Get(Guid id)
-    {
-        var user = await _users.GetUserAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(user.ToNotifyUserDetailed());
+        var uid = HttpContext.User.Claims.ToList()[4].Value;
+        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        return user.ToNotifyUserDetailed();
     }
 
     [HttpPost]
@@ -42,7 +31,7 @@ public class UserController : ControllerBase
     {
         var uid = HttpContext.User.Claims.ToList()[4].Value;
         var user = await _users.GetUserByForgeinUidAsync(uid);
-        if (user != null) return BadRequest();
+        if (user != null) return Conflict();
         var newUser = new NotifyUser
         {
             Id = Guid.NewGuid(),
@@ -66,7 +55,6 @@ public class UserController : ControllerBase
         {
             return BadRequest();
         }
-
         user.Color = updatedUser.Color;
         user.Firstname = updatedUser.Firstname;
         user.Lastname = updatedUser.Lastname;
@@ -74,27 +62,19 @@ public class UserController : ControllerBase
         return Ok(user.ToNotifyUserDetailed());
     }
 
-    [HttpGet("{id:guid}/subscriptions")]
-    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscriptions(Guid id)
+    [HttpGet("/subscriptions")]
+    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscriptions()
     {
-        var user = await _users.GetUserAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
+        var uid = HttpContext.User.Claims.ToList()[4].Value;
+        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
         return Ok(user.Subscriptions.Select(e => e.ToNotifyUserQuick()));
     }
 
-    [HttpGet("{id:guid}/subscribers")]
-    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscribers(Guid id)
+    [HttpGet("/subscribers")]
+    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscribers()
     {
-        var user = await _users.GetUserAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
+        var uid = HttpContext.User.Claims.ToList()[4].Value;
+        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
         return Ok(user.Subscribers.Select(e => e.ToNotifyUserQuick()));
     }
 
