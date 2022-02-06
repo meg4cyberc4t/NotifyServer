@@ -2,6 +2,9 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -11,6 +14,7 @@ using NotifyServer.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -95,5 +99,5 @@ app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Reques
 app.MapControllers();
 
 
-app.Run("https://192.168.0.123");
-// app.Run("https://185.12.95.190");
+//app.Run("https://192.168.0.123");
+app.Run("http://185.12.95.190");

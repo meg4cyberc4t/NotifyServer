@@ -11,5 +11,35 @@ services:
       - PGDATA=./.database/postgres/data
     ports:
       - "5432:5432"
+    networks:
+      bridge:
+        ipv4_address: 10.10.10.3
+
+  server:
+    image: ${DOCKER_REGISTRY-}notify-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # command: dotnet NotifyServer.dll
+    networks:
+      bridge:
+        ipv4_address: 10.10.10.2
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+
     expose:
-      - "5432:5432"
+      - 80
+      - 443
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - sql
+
+networks:
+  bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+        # - gateway: 10.10.10.1
