@@ -1,6 +1,19 @@
 version: '3.4'
 
 services:
+  proxy:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+      - "443:443"
+
+    restart: always
+    networks:
+      bridge:
+        ipv4_address: 10.10.10.4
+
   sql:
     restart: always
     image: postgres:latest
@@ -9,8 +22,8 @@ services:
       - POSTGRES_USER=SERVER
       - POSTGRES_DB=SERVER
       - PGDATA=./.database/postgres/data
-    ports:
-      - "5432:5432"
+    expose:
+      - 5432
     networks:
       bridge:
         ipv4_address: 10.10.10.3
@@ -20,26 +33,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # command: dotnet NotifyServer.dll
     networks:
       bridge:
         ipv4_address: 10.10.10.2
     environment:
       - ASPNETCORE_ENVIRONMENT=Release
-
     expose:
       - 80
-      - 443
-    ports:
-      - "80:80"
-      - "443:443"
     depends_on:
       - sql
+      - proxy
 
 networks:
   bridge:
     driver: bridge
     ipam:
+      driver: default
       config:
         - subnet: 10.10.10.0/24
         # - gateway: 10.10.10.1

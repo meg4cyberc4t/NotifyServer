@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,6 +13,8 @@ using NotifyServer.Middleware;
 using NotifyServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 
 builder.Services.AddControllers();
 
@@ -77,13 +80,14 @@ var app = builder.Build();
 
 // app.UseExceptionHandler("/Error");
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
 if (builder.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseHsts();
 }
 
 app.UseSwagger();
@@ -99,5 +103,5 @@ app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Reques
 app.MapControllers();
 
 
-//app.Run("https://192.168.0.123");
-app.Run("http://185.12.95.190");
+app.Run();
+// app.Run("http://185.12.95.190");
