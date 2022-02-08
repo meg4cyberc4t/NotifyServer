@@ -100,7 +100,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Request.Method == "POST"),
+app.UseWhen(context => !(context.Request.Path.Equals("/user") && context.Request.Method == "POST"),
     appBuilder => { appBuilder.UseMiddleware<FactoryCheckCreatingUserMiddleware>(); });
 
 app.MapControllers();
