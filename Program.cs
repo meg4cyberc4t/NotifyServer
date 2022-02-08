@@ -2,6 +2,10 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,7 +14,10 @@ using NotifyServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -68,18 +75,22 @@ builder.Services.AddControllersWithViews()
     );
 
 
-
 var app = builder.Build();
 
-// app.UseExceptionHandler("/Error");
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()!.CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 if (builder.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseHsts();
 }
 
 app.UseSwagger();
@@ -89,11 +100,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Request.Method == "POST"),
+app.UseWhen(context => !(context.Request.Path.Equals("/user") && context.Request.Method == "POST"),
     appBuilder => { appBuilder.UseMiddleware<FactoryCheckCreatingUserMiddleware>(); });
 
 app.MapControllers();
 
-
-app.Run("https://192.168.0.123");
-// app.Run("https://185.12.95.190");
+app.Run();
