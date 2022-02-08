@@ -75,10 +75,13 @@ builder.Services.AddControllersWithViews()
     );
 
 
-
 var app = builder.Build();
 
-// app.UseExceptionHandler("/Error");
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()!.CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
+}
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -102,6 +105,4 @@ app.UseWhen(context => !(context.Request.Path.Equals("/users") && context.Reques
 
 app.MapControllers();
 
-
 app.Run();
-// app.Run("http://185.12.95.190");
