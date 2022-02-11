@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotifyServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220127104726_InitialMigration")]
+    [Migration("20220211124433_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -124,8 +124,8 @@ namespace NotifyServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Color")
-                        .HasColumnType("integer");
+                    b.Property<long>("Color")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Firstname")
                         .IsRequired()
