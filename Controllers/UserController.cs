@@ -21,15 +21,14 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<NotifyUserDetailed> Get()
     {
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         return user.ToNotifyUserDetailed();
     }
 
     [HttpPost]
     public async Task<ActionResult<NotifyUserDetailed>> Create([FromBody] NotifyUserInput input)
     {
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
+        var uid = HttpContext.User.Claims.First(e => e.Type == "user_id").Value;
         var user = await _users.GetUserByForgeinUidAsync(uid);
         if (user != null) return Conflict();
         var newUser = new NotifyUser

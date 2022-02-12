@@ -15,9 +15,8 @@ public class FactoryCheckCreatingUserMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        try
-        {
-            var uid = context.User.Claims.ToList()[4].Value;
+        try{
+            var uid = context.User.Claims.First(e => e.Type == "user_id").Value;
             var user = await _db.Users.FirstAsync(e => e.ForgeinUid == uid);
             context.Items.Add("User", user);
         }

@@ -122,8 +122,8 @@ namespace NotifyServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Color")
-                        .HasColumnType("integer");
+                    b.Property<long>("Color")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Firstname")
                         .IsRequired()
