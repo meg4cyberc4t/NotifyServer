@@ -1,3 +1,4 @@
+using System.Security;
 using FirebaseAdmin.Auth;
 using Microsoft.EntityFrameworkCore;
 using NotifyServer.Models;
@@ -17,6 +18,10 @@ public class FactoryCheckCreatingUserMiddleware : IMiddleware
     {
         try{
             var uid = context.User.Claims.First(e => e.Type == "user_id").Value;
+            if (context.User.Claims.First(e => e.Type == "email_verified").Value == "false")
+            {
+                throw new VerificationException("Email not verifed");
+            }
             var user = await _db.Users.FirstAsync(e => e.ForgeinUid == uid);
             context.Items.Add("User", user);
         }
