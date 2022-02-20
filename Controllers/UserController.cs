@@ -19,7 +19,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<NotifyUserDetailed> Get()
+    public NotifyUserDetailed Get()
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         return user.ToNotifyUserDetailed();
