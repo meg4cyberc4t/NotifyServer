@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using NotifyServer.Models;
 using NotifyServer.Repository;
 
@@ -37,6 +36,7 @@ public class UserController : ControllerBase
             Firstname = input.Firstname,
             Lastname = input.Lastname,
             Color = input.Color,
+            Status = input.Status,
             Subscribers = new List<NotifyUser>(),
             Subscriptions = new List<NotifyUser>(),
             ForgeinUid = uid
@@ -57,6 +57,7 @@ public class UserController : ControllerBase
         user.Color = updatedUser.Color;
         user.Firstname = updatedUser.Firstname;
         user.Lastname = updatedUser.Lastname;
+        user.Status = updatedUser.Status;
         await _users.UpdateUserAsync(user);
         return Ok(user.ToNotifyUserDetailed(user));
     }
