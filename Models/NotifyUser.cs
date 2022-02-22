@@ -21,7 +21,8 @@ public record NotifyUserDetailed(
     string Lastname,
     long Color,
     int SubscriptionsCount,
-    int SubscribersCount
+    int SubscribersCount,
+    bool Follow
 );
 
 public class NotifyUser
@@ -53,7 +54,7 @@ public class NotifyUser
         );
     }
 
-    public NotifyUserDetailed ToNotifyUserDetailed()
+    public NotifyUserDetailed ToNotifyUserDetailed(NotifyUser user)
     {
         return new NotifyUserDetailed(
             Id: Id,
@@ -61,7 +62,8 @@ public class NotifyUser
             Lastname: Lastname,
             Color: Color,
             SubscriptionsCount: Subscriptions.Select(e => e.ToNotifyUserQuick()).Count(),
-            SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count()
+            SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count(),
+            Follow: Subscribers.Contains(user)
         );
     }
 }

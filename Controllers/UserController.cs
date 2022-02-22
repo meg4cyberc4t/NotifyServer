@@ -22,7 +22,7 @@ public class UserController : ControllerBase
     public NotifyUserDetailed Get()
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        return user.ToNotifyUserDetailed();
+        return user.ToNotifyUserDetailed(user);
     }
 
     [HttpPost]
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
             ForgeinUid = uid
         };
         await _users.CreateUserAsync(newUser);
-        return Ok(newUser.ToNotifyUserDetailed());
+        return Ok(newUser.ToNotifyUserDetailed(user!));
     }
 
     [HttpPut]
@@ -58,7 +58,7 @@ public class UserController : ControllerBase
         user.Firstname = updatedUser.Firstname;
         user.Lastname = updatedUser.Lastname;
         await _users.UpdateUserAsync(user);
-        return Ok(user.ToNotifyUserDetailed());
+        return Ok(user.ToNotifyUserDetailed(user));
     }
 
     [HttpGet("/subscriptions")]

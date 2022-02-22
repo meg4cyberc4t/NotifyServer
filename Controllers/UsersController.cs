@@ -27,7 +27,7 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        return Ok(user.ToNotifyUserDetailed());
+        return Ok(user.ToNotifyUserDetailed(user));
     }
 
     [HttpGet("{id:guid}/subscriptions")]
