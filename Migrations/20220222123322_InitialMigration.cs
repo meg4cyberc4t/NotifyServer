@@ -17,6 +17,7 @@ namespace NotifyServer.Migrations
                     Firstname = table.Column<string>(type: "text", nullable: false),
                     Lastname = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<long>(type: "bigint", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
                     ForgeinUid = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>

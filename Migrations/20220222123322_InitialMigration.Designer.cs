@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotifyServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220222072910_InitialMigration")]
+    [Migration("20220222123322_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,6 +134,10 @@ namespace NotifyServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Lastname")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
 
