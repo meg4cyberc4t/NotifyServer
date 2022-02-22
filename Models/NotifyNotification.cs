@@ -21,7 +21,7 @@ public record NotifyNotificationInput(
 
 public record NotifyNotificationQuick(
     Guid Id,
-    [StringLength(50)] [Required] string Title,
+    string Title,
     string Description,
     bool Important,
     RepeatMode RepeatMode,
@@ -32,7 +32,7 @@ public record NotifyNotificationQuick(
 
 public record NotifyNotificationDetailed(
     Guid Id,
-    [StringLength(50)] [Required] string Title,
+    string Title,
     string Description,
     bool Important,
     RepeatMode RepeatMode,
@@ -44,10 +44,11 @@ public record NotifyNotificationDetailed(
 
 public class NotifyNotification
 {
-    public Guid Id { get; set; }
-    [StringLength(50)] [Required] public string Title { get; set; } = null!;
+    public Guid Id { get; init; }
+    public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public ICollection<NotifyUser> Participants { get; set; } = null!;
+    public ICollection<NotifyUser> Participants { get; init; } = null!;
+
     public bool Important;
     public RepeatMode RepeatMode { get; set; } = RepeatMode.None;
     public DateTime Deadline { get; set; }

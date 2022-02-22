@@ -27,8 +27,8 @@ public record NotifyUserDetailed(
 public class NotifyUser
 {
     public Guid Id { get; init; }
-    [StringLength(50)] [Required] public string Firstname { get; set; } = null!;
-    [StringLength(50)] [Required] public string Lastname { get; set; } = null!;
+    public string Firstname { get; set; } = null!;
+    public string Lastname { get; set; } = null!;
     public long Color { get; set; }
     public ICollection<NotifyUser> Subscriptions { get; init; } = new List<NotifyUser>();
     public ICollection<NotifyUser> Subscribers { get; init; } = new List<NotifyUser>();

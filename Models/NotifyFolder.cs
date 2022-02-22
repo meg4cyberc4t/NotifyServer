@@ -9,7 +9,7 @@ public record NotifyFolderInput(
 
 public record NotifyFolderDetailed(
     Guid Id,
-    [StringLength(50)] [Required] string Title,
+    string Title,
     string Description,
     int ParticipantsCount,
     int NotificationsCount
@@ -17,12 +17,12 @@ public record NotifyFolderDetailed(
 
 public class NotifyFolder
 {
-    public Guid Id { get; set; }
-    [StringLength(50)] [Required] public string Title { get; set; } = null!;
+    public Guid Id { get; init; }
+    public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public ICollection<NotifyUser> Participants { get; set; } = null!;
-    public ICollection<NotifyNotification> NotificationsList { get; set; } = null!;
-    public NotifyUser Creator { get; set; } = null!;
+    public ICollection<NotifyUser> Participants { get; init; } = null!;
+    public ICollection<NotifyNotification> NotificationsList { get; init; } = null!;
+    public NotifyUser Creator { get; init; } = null!;
 
     public NotifyFolderDetailed ToNotifyFolderDetailed()
     {

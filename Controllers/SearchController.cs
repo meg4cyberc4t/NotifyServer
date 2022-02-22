@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_users", Name = "SearchFromUsers")]
-    public ActionResult<IEnumerable<NotifyUserQuick>> SearchFromUsers([FromQuery] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public ActionResult<IEnumerable<NotifyUserQuick>> SearchFromUsers([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
@@ -33,7 +34,7 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_notifications", Name = "SearchFromNotifications")]
-    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> SearchFromNotifications([FromQuery] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> SearchFromNotifications([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
@@ -45,7 +46,7 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_folders", Name = "SearchFromFolders")]
-    public async Task<ActionResult<IEnumerable<NotifyFolderDetailed>>> SearchFromFolders([FromQuery] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public async Task<ActionResult<IEnumerable<NotifyFolderDetailed>>> SearchFromFolders([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {

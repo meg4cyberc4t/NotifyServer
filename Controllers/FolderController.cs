@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotifyServer.Models;
 using NotifyServer.Repository;
+using System.Collections.Generic;
 
 namespace NotifyServer.Controllers;
 
@@ -143,7 +145,7 @@ public class FolderController : Controller
     }
 
     [HttpPost("{id:guid}/invite")]
-    public async Task<ActionResult> Invite(Guid id, [FromQuery] Guid inviteUserId)
+    public async Task<ActionResult> Invite(Guid id, [FromQuery] [Required] Guid inviteUserId)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folder = await _folderRepository.GetFolderAsync(id: id);
@@ -170,7 +172,7 @@ public class FolderController : Controller
     }
 
     [HttpPost("{id:guid}/exclude")]
-    public async Task<ActionResult> Exclude(Guid id, [FromQuery] Guid excludeUserId)
+    public async Task<ActionResult> Exclude(Guid id, [FromQuery] [Required] Guid excludeUserId)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folder = await _folderRepository.GetFolderAsync(id: id);
@@ -198,11 +200,11 @@ public class FolderController : Controller
         return NoContent();
     }
 
-    [HttpPost("{ntfId:guid}/add_notification")]
-    public async Task<ActionResult> Add(Guid folderId, [FromQuery] List<Guid> listIds)
+    [HttpPost("{id:guid}/add_notification")]
+    public async Task<ActionResult> Add([FromQuery][Required] List<Guid> notificationId, Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var folder = await _folderRepository.GetFolderAsync(folderId);
+        var folder = await _folderRepository.GetFolderAsync(id);
         if (folder == null)
         {
             return BadRequest();
@@ -213,20 +215,16 @@ public class FolderController : Controller
             return Forbid();
         }
 
-        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(listIds);
-        foreach (var ntf in ntfs)
-        {
-            folder.NotificationsList.Add(ntf);
-        }
-
+        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(notificationId);
+        folder.NotificationsList.ToList().AddRange(ntfs);
         return NoContent();
     }
 
-    [HttpPost("{ntfId:guid}/remove_notification")]
-    public async Task<ActionResult> Remove(Guid folderId, [FromQuery] List<Guid> listIds)
+    [HttpPost("{id:guid}/remove_notification")]
+    public async Task<ActionResult> Remove(Guid id, [FromQuery] List<Guid> notificationId)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var folder = await _folderRepository.GetFolderAsync(folderId);
+        var folder = await _folderRepository.GetFolderAsync(id);
         if (folder == null)
         {
             return BadRequest();
@@ -237,7 +235,7 @@ public class FolderController : Controller
             return Forbid();
         }
 
-        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(listIds);
+        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(notificationId);
         foreach (var ntf in ntfs)
         {
             folder.NotificationsList.Remove(ntf);

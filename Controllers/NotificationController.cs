@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotifyServer.Models;
@@ -128,7 +129,7 @@ public class NotificationController : Controller
     }
 
     [HttpPost("{id:guid}/invite")]
-    public async Task<ActionResult> Invite(Guid id, [FromQuery] Guid inviteUserId)
+    public async Task<ActionResult> Invite(Guid id, [FromQuery][Required] Guid inviteUserId)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var notification = await _notificationRepository.GetNotificationAsync(id: id);
@@ -155,7 +156,7 @@ public class NotificationController : Controller
     }
 
     [HttpPost("{id:guid}/exclude")]
-    public async Task<ActionResult> Exclude(Guid id, [FromQuery] Guid excludeUserId)
+    public async Task<ActionResult> Exclude(Guid id, [FromQuery][Required] Guid excludeUserId)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var notification = await _notificationRepository.GetNotificationAsync(id: id);
