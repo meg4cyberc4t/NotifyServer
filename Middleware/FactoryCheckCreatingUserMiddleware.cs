@@ -17,18 +17,11 @@ public class FactoryCheckCreatingUserMiddleware : IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var uid = context.User.Claims.First(e => e.Type == "user_id").Value;
-        var emailVerified = context.User.Claims.First(e => e.Type == "email_verified").Value == "false";
-        if (!emailVerified)
-        {
-            // Email not verifed - 403 HTTP
-            context.Response.StatusCode = 403;
-            return;
-        }
         var user = await _db.Users.FirstOrDefaultAsync(e => e.ForgeinUid == uid);
         if (user == null)
         {
-            // There is no entry in db - 412 HTTP
-            context.Response.StatusCode = 412;
+            // There is no entry in db
+            context.Response.StatusCode = 403;
             return;
         }
         context.Items.Add("User", user);
