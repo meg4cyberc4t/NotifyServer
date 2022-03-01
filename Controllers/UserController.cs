@@ -63,18 +63,16 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("/subscriptions")]
-    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscriptions()
+    public ActionResult<IEnumerable<NotifyUserQuick>> Subscriptions()
     {
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         return Ok(user.Subscriptions.Select(e => e.ToNotifyUserQuick()));
     }
 
     [HttpGet("/subscribers")]
-    public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> Subscribers()
+    public ActionResult<IEnumerable<NotifyUserQuick>> Subscribers()
     {
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         return Ok(user.Subscribers.Select(e => e.ToNotifyUserQuick()));
     }
 
