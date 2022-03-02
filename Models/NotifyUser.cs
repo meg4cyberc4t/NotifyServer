@@ -13,6 +13,7 @@ public record NotifyUserQuick(
     Guid Id,
     string Firstname,
     string Lastname,
+    string Status,
     long Color
 );
 
@@ -54,6 +55,7 @@ public class NotifyUser
             Id: Id,
             Firstname: Firstname,
             Lastname: Lastname,
+            Status: Status,
             Color: Color
         );
     }
