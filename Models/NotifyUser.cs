@@ -70,7 +70,7 @@ public class NotifyUser
             Status: Status,
             SubscriptionsCount: Subscriptions.Select(e => e.ToNotifyUserQuick()).Count(),
             SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count(),
-            Follow: Subscribers.Contains(user)
+            Follow: Subscriptions.Contains(user)
         );
     }
 }

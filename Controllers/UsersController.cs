@@ -21,13 +21,14 @@ public class UsersController : ControllerBase
     [HttpGet("{id:guid}", Name = "GetUserById")]
     public async Task<ActionResult<NotifyUserDetailed>> Get(Guid id)
     {
+        var requestUser = (HttpContext.Items["User"] as NotifyUser)!;
         var user = await _users.GetUserAsync(id);
         if (user == null)
         {
             return NotFound();
         }
 
-        return Ok(user.ToNotifyUserDetailed(user));
+        return Ok(user.ToNotifyUserDetailed(requestUser));
     }
 
     [HttpGet("{id:guid}/subscriptions")]
