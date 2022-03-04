@@ -27,7 +27,6 @@ public class UsersController : ControllerBase
         {
             return NotFound();
         }
-
         return Ok(user.ToNotifyUserDetailed(requestUser));
     }
 

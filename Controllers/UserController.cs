@@ -27,6 +27,8 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<NotifyUserDetailed>> Create([FromBody] NotifyUserInput input)
     {
+        // This method is specifically not found in middleware, in order to create a user.
+        // It is important to take the uid here
         var uid = HttpContext.User.Claims.First(e => e.Type == "user_id").Value;
         var user = await _users.GetUserByForgeinUidAsync(uid);
         if (user != null) return Conflict();
@@ -49,11 +51,6 @@ public class UserController : ControllerBase
     public async Task<ActionResult<NotifyUserQuick>> Put([FromBody] NotifyUserInput updatedUser)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        user = await _users.GetUserAsync(user.Id);
-        if (user == null)
-        {
-            return BadRequest();
-        }
         user.Color = updatedUser.Color;
         user.Firstname = updatedUser.Firstname;
         user.Lastname = updatedUser.Lastname;
@@ -84,27 +81,25 @@ public class UserController : ControllerBase
         {
             return BadRequest();
         }
-
-        var fromUser = await _users.GetUserAsync(user.Id);
         var toUser = await _users.GetUserAsync(id);
-        if (fromUser == null || toUser == null)
+        if (toUser == null)
         {
             return BadRequest();
         }
 
-        if (fromUser.Subscribers.Contains(toUser) || toUser.Subscriptions.Contains(fromUser))
+        if (user.Subscribers.Contains(toUser) || toUser.Subscriptions.Contains(user))
         {
-            toUser.Subscriptions.Remove(fromUser);
-            fromUser.Subscribers.Remove(toUser);
+            toUser.Subscriptions.Remove(user);
+            user.Subscribers.Remove(toUser);
         }
         else
         {
-            toUser.Subscriptions.Add(fromUser);
-            fromUser.Subscribers.Add(toUser);
+            toUser.Subscriptions.Add(user);
+            user.Subscribers.Add(toUser);
         }
 
         await _users.UpdateUserAsync(toUser);
-        await _users.UpdateUserAsync(fromUser);
+        await _users.UpdateUserAsync(user);
 
         return NoContent();
     }

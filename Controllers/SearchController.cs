@@ -34,26 +34,24 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_notifications", Name = "SearchFromNotifications")]
-    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> SearchFromNotifications([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public ActionResult<IEnumerable<NotifyNotificationQuick>> SearchFromNotifications([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
             return BadRequest();
         }
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         return Ok(_search.FromNotificationsQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Select(e => e.ToNotifyNotificationQuick()));
     }
 
     [HttpGet("from_folders", Name = "SearchFromFolders")]
-    public async Task<ActionResult<IEnumerable<NotifyFolderDetailed>>> SearchFromFolders([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public ActionResult<IEnumerable<NotifyFolderDetailed>> SearchFromFolders([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
             return BadRequest();
         }
-        var uid = HttpContext.User.Claims.ToList()[4].Value;
-        var user = (await _users.GetUserByForgeinUidAsync(uid))!;
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
         return Ok(_search.FromFoldersQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Select(e => e.ToNotifyFolderDetailed()));
     }
 }
