@@ -66,14 +66,15 @@ public class NotificationController : Controller
 
     [HttpPost]
     public async Task<ActionResult<NotifyNotificationDetailed>> Create([FromBody] NotifyNotificationInput input)
-    {
+    {      
+
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var ntf = new NotifyNotification()
         {
             Id = Guid.NewGuid(),
             Title = input.Title,
             Description = input.Description,
-            Deadline = input.Deadline,
+            Deadline = DateTime.SpecifyKind(input.Deadline, DateTimeKind.Utc),
             RepeatMode = input.RepeatMode,
             Creator = user,
             Important = input.Important,
@@ -119,7 +120,7 @@ public class NotificationController : Controller
             return Forbid();
         }
 
-        notification.Deadline = updatedNtf.Deadline;
+        notification.Deadline = DateTime.SpecifyKind(updatedNtf.Deadline, DateTimeKind.Utc);
         notification.Title = updatedNtf.Title;
         notification.Description = updatedNtf.Description;
         notification.RepeatMode = updatedNtf.RepeatMode;
