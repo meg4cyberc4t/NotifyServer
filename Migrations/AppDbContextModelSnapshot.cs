@@ -17,7 +17,7 @@ namespace NotifyServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.1")
+                .HasAnnotation("ProductVersion", "6.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -91,6 +91,9 @@ namespace NotifyServer.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("Important")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("NotifyFolderId")
                         .HasColumnType("uuid");

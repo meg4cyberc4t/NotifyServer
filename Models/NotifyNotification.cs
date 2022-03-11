@@ -49,10 +49,10 @@ public class NotifyNotification
     public string Description { get; set; } = null!;
     public ICollection<NotifyUser> Participants { get; init; } = null!;
 
-    public bool Important;
+    public bool Important { get; set; }
     public RepeatMode RepeatMode { get; set; } = RepeatMode.None;
     public DateTime Deadline { get; set; }
-    public NotifyUser Creator { get; set; } = null!;
+    public NotifyUser Creator { get; init; } = null!;
 
     public int UniqueClaim { get; init; }
 
