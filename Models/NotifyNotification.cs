@@ -4,11 +4,11 @@ namespace NotifyServer.Models;
 
 public enum RepeatMode
 {
-    None,
-    Everyday,
-    Everyweek,
-    Everymonth,
-    Everyyear,
+    None = 0,
+    Everyday = 1,
+    Everyweek = 2,
+    Everymonth = 3,
+    Everyyear = 4,
 }
 
 public record NotifyNotificationInput(
@@ -50,7 +50,7 @@ public class NotifyNotification
     public ICollection<NotifyUser> Participants { get; init; } = null!;
 
     public bool Important { get; set; }
-    public RepeatMode RepeatMode { get; set; } = RepeatMode.None;
+    public RepeatMode RepeatMode { get; set; }
     public DateTime Deadline { get; set; }
     public NotifyUser Creator { get; init; } = null!;
 
