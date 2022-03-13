@@ -25,7 +25,8 @@ public record NotifyUserDetailed(
     long Color,
     int SubscriptionsCount,
     int SubscribersCount,
-    bool Follow
+    bool Follow,
+    bool ItsMe
 );
 
 public class NotifyUser
@@ -70,7 +71,8 @@ public class NotifyUser
             Status: Status,
             SubscriptionsCount: Subscriptions.Select(e => e.ToNotifyUserQuick()).Count(),
             SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count(),
-            Follow: Subscriptions.Contains(user)
+            Follow: Subscriptions.Contains(user),
+            ItsMe: Id == user.Id
         );
     }
 }
