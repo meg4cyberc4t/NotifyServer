@@ -141,6 +141,11 @@ public class NotificationController : Controller
             return BadRequest();
         }
 
+        if (inviteUser.Id == user.Id)
+        {
+            return BadRequest();
+        }
+
         if (!(notification.Participants.Contains(user) || notification.Creator == user ||
               !user.Subscribers.Contains(inviteUser)))
         {
@@ -168,6 +173,11 @@ public class NotificationController : Controller
             return BadRequest();
         }
 
+        if (inviteUser.Id == user.Id)
+        {
+            return BadRequest();
+        }
+        
         if (!(notification.Participants.Contains(user) || notification.Creator == user))
         {
             return Forbid();
