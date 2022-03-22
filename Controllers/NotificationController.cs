@@ -69,6 +69,7 @@ public class NotificationController : Controller
     {      
 
         var user = (HttpContext.Items["User"] as NotifyUser)!;
+        
         var ntf = new NotifyNotification()
         {
             Id = Guid.NewGuid(),
@@ -81,6 +82,8 @@ public class NotificationController : Controller
             Participants = new List<NotifyUser>() {user},
             UniqueClaim = new Random().Next()
         };
+        user.NumberOfNotificationsOfAllTime++;
+        await _userRepository.UpdateUserAsync(user);
         await _notificationRepository.CreateNotificationAsync(ntf);
         return Ok(ntf.ToNotifyNotificationDetailed());
     }
