@@ -45,7 +45,7 @@ public class UserController : ControllerBase
             ForgeinUid = uid
         };
         await _users.CreateUserAsync(newUser);
-        return Ok(newUser.ToNotifyUserDetailed(user!));
+        return NoContent();
     }
 
     [HttpPut]
