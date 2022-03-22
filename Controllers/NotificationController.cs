@@ -100,7 +100,15 @@ public class NotificationController : Controller
             return Forbid();
         }
 
-        await _notificationRepository.DeleteNotificationAsync(notification);
+        if (notification.Creator.Id == user.Id)
+        {
+            notification.Participants.Remove(user);
+            await _notificationRepository.UpdateNotificationAsync(notification);
+        }
+        else
+        {
+            await _notificationRepository.DeleteNotificationAsync(notification);
+        }
         return NoContent();
     }
 
