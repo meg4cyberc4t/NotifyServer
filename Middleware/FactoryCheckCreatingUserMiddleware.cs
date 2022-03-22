@@ -17,7 +17,7 @@ public class FactoryCheckCreatingUserMiddleware : IMiddleware
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         var uid = context.User.Claims.First(e => e.Type == "user_id").Value;
-        var user = await _db.Users.Include(e => e.Subscribers).Include(e => e.Subscriptions)
+        var user = await _db.Users.Include(e => e.Subscribers).Include(e => e.Subscriptions).Include(e => e.Notifications)
             .FirstOrDefaultAsync(e => e.ForgeinUid == uid);
         if (user == null)
         {

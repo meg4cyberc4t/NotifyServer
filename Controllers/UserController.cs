@@ -21,6 +21,7 @@ public class UserController : ControllerBase
     public NotifyUserDetailed Get()
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
+        
         return user.ToNotifyUserDetailed(user);
     }
 

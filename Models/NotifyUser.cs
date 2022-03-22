@@ -76,7 +76,7 @@ public class NotifyUser
             SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count(),
             Follow: Subscriptions.Contains(user),
             ItsMe: Id == user.Id,
-            NumberOfNotifications: NumberOfNotificationsOfAllTime
+            NumberOfNotifications: Notifications.Intersect(user.Notifications).Count()
         );
     }
 }

@@ -18,6 +18,7 @@ public class NotifyUserReposoitoryPg : INotifyUserRepository
         return await _context.Users
             .Include(e => e.Subscribers)
             .Include(e => e.Subscriptions)
+            .Include(e => e.Notifications)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
