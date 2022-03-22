@@ -26,7 +26,8 @@ public record NotifyUserDetailed(
     int SubscriptionsCount,
     int SubscribersCount,
     bool Follow,
-    bool ItsMe
+    bool ItsMe,
+    int NumberOfNotifications
 );
 
 public class NotifyUser
@@ -48,6 +49,8 @@ public class NotifyUser
 
     public ICollection<NotifyNotification> NotificationsWhereCreator { get; set; } = null!;
     public ICollection<NotifyFolder> FolderWhereCreator { get; set; } = null!;
+
+    public int NumberOfNotificationsOfAllTime { get; set; } = 0;
 
 
     public NotifyUserQuick ToNotifyUserQuick()
@@ -72,7 +75,8 @@ public class NotifyUser
             SubscriptionsCount: Subscriptions.Select(e => e.ToNotifyUserQuick()).Count(),
             SubscribersCount: Subscribers.Select(e => e.ToNotifyUserQuick()).Count(),
             Follow: Subscriptions.Contains(user),
-            ItsMe: Id == user.Id
+            ItsMe: Id == user.Id,
+            NumberOfNotifications: NumberOfNotificationsOfAllTime
         );
     }
 }

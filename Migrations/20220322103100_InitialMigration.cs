@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NotifyServer.Migrations
 {
-    public partial class InitialMigrate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,7 +18,8 @@ namespace NotifyServer.Migrations
                     Lastname = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<long>(type: "bigint", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
-                    ForgeinUid = table.Column<string>(type: "text", nullable: false)
+                    ForgeinUid = table.Column<string>(type: "text", nullable: false),
+                    NumberOfNotificationsOfAllTime = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

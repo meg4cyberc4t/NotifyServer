@@ -138,6 +138,9 @@ namespace NotifyServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("NumberOfNotificationsOfAllTime")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
