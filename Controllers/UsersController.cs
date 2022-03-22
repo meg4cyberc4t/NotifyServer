@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
         return Ok(user.Subscribers.Select(e => e.ToNotifyUserQuick()));
     }
     
-    [HttpGet("subscribers")]
+    [HttpGet("notifications")]
     public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> NotificationById(Guid id)
     {
         var requestUser = (HttpContext.Items["User"] as NotifyUser)!;
