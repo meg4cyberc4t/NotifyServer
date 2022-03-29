@@ -17,17 +17,18 @@ public class NotifyFolderRepositoryPg : INotifyFolderRepository
         return await _context.Folders
             .Include(e => e.Participants)
             .Include(e => e.NotificationsList)
+            .Include(e => e.Creator)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public async Task<IEnumerable<NotifyFolder>> GetFoldersAsync(NotifyUser input)
+    public async Task<IEnumerable<NotifyFolder>> GetFoldersAsync(NotifyUser inputUser)
     {
         var user = await _context.Users
             .Include(e => e.Folders)
             .ThenInclude(a => a.NotificationsList)
             .Include(e => e.Folders)
             .ThenInclude(a => a.Participants)
-            .FirstOrDefaultAsync(e => e.Id == input.Id);
+            .FirstOrDefaultAsync(e => e.Id == inputUser.Id);
         return user!.Folders;
     }
 

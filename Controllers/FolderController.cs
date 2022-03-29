@@ -28,7 +28,7 @@ public class FolderController : Controller
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folders = await _folderRepository.GetFoldersAsync(user);
-        return Ok(folders.Select(e => e.ToNotifyFolderDetailed()));
+        return Ok(folders.Select(e => e.ToNotifyFolderQuick()));
     }
 
 
