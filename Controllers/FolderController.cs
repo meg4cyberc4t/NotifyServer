@@ -188,6 +188,10 @@ public class FolderController : Controller
             return Forbid();
         }
 
+        if (inviteUser.Id == user.Id)
+        {
+            return BadRequest();
+        }
 
         if (!folder.Participants.Contains(inviteUser))
         {
