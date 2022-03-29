@@ -95,6 +95,24 @@ public class NotificationController : Controller
         return NoContent();
     }
 
+    [HttpGet("{id:guid}", Name = "GetNotificationById")]
+    public async Task<ActionResult<NotifyNotificationDetailed>> Get(Guid id)
+    {
+        var user = (HttpContext.Items["User"] as NotifyUser)!;
+        var ntf = await _notificationRepository.GetNotificationAsync(id);
+        if (ntf == null)
+        {
+            return NotFound();
+        }
+
+        if (!ntf.Participants.Contains(user))
+        {
+            return Forbid();
+        }
+
+        return Ok(ntf.ToNotifyNotificationDetailed());
+    }
+    
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<NotifyNotificationDetailed>> Put(Guid id,
         [FromBody] NotifyNotificationInput updatedNtf)

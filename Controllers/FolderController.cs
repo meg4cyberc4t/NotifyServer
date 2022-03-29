@@ -49,25 +49,7 @@ public class FolderController : Controller
 
         return Ok(folder.ToNotifyFolderDetailed());
     }
-
-    [HttpGet("{id:guid}/notifications", Name = "GetNotificationsByFolder")]
-    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> GetNotificationsByFolder(Guid id)
-    {
-        var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var folder = await _folderRepository.GetFolderAsync(id);
-        if (folder == null)
-        {
-            return NotFound();
-        }
-
-        if (!folder.Participants.Contains(user))
-        {
-            return Forbid();
-        }
-
-        return Ok(folder.NotificationsList.Select(e => e.ToNotifyNotificationDetailed()));
-    }
-
+    
     [HttpGet("{id:guid}/participants", Name = "GetParticipantsByFolder")]
     public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> GetParticipantsByFolder(Guid id)
     {
