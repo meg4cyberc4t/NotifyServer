@@ -202,7 +202,11 @@ public class FolderController : Controller
         }
 
         var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(notificationId);
-        folder.NotificationsList.ToList().AddRange(ntfs);
+        foreach (var notifyNotification in ntfs)
+        {
+            notifyNotification.Folder = folder;
+            await _notificationRepository.UpdateNotificationAsync(notifyNotification);
+        }
         return NoContent();
     }
 

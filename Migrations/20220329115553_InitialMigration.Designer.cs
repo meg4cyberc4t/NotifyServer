@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotifyServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220322103100_InitialMigration")]
+    [Migration("20220329115553_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,11 +94,11 @@ namespace NotifyServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("FolderId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("Important")
                         .HasColumnType("boolean");
-
-                    b.Property<Guid?>("NotifyFolderId")
-                        .HasColumnType("uuid");
 
                     b.Property<int>("RepeatMode")
                         .HasColumnType("integer");
@@ -114,7 +114,7 @@ namespace NotifyServer.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("NotifyFolderId");
+                    b.HasIndex("FolderId");
 
                     b.ToTable("Notifications");
                 });
@@ -216,11 +216,13 @@ namespace NotifyServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NotifyServer.Models.NotifyFolder", null)
+                    b.HasOne("NotifyServer.Models.NotifyFolder", "Folder")
                         .WithMany("NotificationsList")
-                        .HasForeignKey("NotifyFolderId");
+                        .HasForeignKey("FolderId");
 
                     b.Navigation("Creator");
+
+                    b.Navigation("Folder");
                 });
 
             modelBuilder.Entity("NotifyUserNotifyUser", b =>

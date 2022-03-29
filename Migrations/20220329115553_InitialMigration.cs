@@ -82,14 +82,14 @@ namespace NotifyServer.Migrations
                     Deadline = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: false),
                     UniqueClaim = table.Column<int>(type: "integer", nullable: false),
-                    NotifyFolderId = table.Column<Guid>(type: "uuid", nullable: true)
+                    FolderId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Folders_NotifyFolderId",
-                        column: x => x.NotifyFolderId,
+                        name: "FK_Notifications_Folders_FolderId",
+                        column: x => x.FolderId,
                         principalTable: "Folders",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -159,9 +159,9 @@ namespace NotifyServer.Migrations
                 column: "CreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_NotifyFolderId",
+                name: "IX_Notifications_FolderId",
                 table: "Notifications",
-                column: "NotifyFolderId");
+                column: "FolderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotifyFolderNotifyUser_ParticipantsId",
