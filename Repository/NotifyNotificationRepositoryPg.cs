@@ -35,10 +35,9 @@ public class NotifyNotificationRepositoryPg : INotifyNotificationRepository
         return user!.Notifications;
     }
 
-    public async Task<IEnumerable<NotifyNotification>> GetNotificationsFromIdsListAsync(List<Guid> ids)
+    public IQueryable<NotifyNotification> GetNotificationsFromIdsList(List<Guid> ids)
     {
-        var ntfs = await _context.Notifications.Where(e => ids.Contains(e.Id)).ToListAsync();
-        return ntfs;
+        return _context.Notifications.Where(e => ids.Contains(e.Id));
     }
 
     public async Task CreateNotificationAsync(NotifyNotification ntf)

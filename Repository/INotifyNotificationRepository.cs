@@ -7,7 +7,7 @@ public interface INotifyNotificationRepository
     Task<NotifyNotification?> GetNotificationAsync(Guid id);
 
     Task<IEnumerable<NotifyNotification>> GetNotificationsAsync(NotifyUser user);
-    Task<IEnumerable<NotifyNotification>> GetNotificationsFromIdsListAsync(List<Guid> ids);
+    IQueryable<NotifyNotification> GetNotificationsFromIdsList(List<Guid> ids);
 
 
     Task CreateNotificationAsync(NotifyNotification item);

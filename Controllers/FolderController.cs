@@ -201,12 +201,12 @@ public class FolderController : Controller
             return Forbid();
         }
 
-        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(notificationId);
+        var ntfs = _notificationRepository.GetNotificationsFromIdsList(notificationId);
         foreach (var notifyNotification in ntfs)
         {
-            notifyNotification.Folder = folder;
-            await _notificationRepository.UpdateNotificationAsync(notifyNotification);
+            folder.NotificationsList.Add(notifyNotification);
         }
+        await _folderRepository.UpdateFolderAsync(folder);
         return NoContent();
     }
 
@@ -225,11 +225,12 @@ public class FolderController : Controller
             return Forbid();
         }
 
-        var ntfs = await _notificationRepository.GetNotificationsFromIdsListAsync(notificationId);
+        var ntfs = _notificationRepository.GetNotificationsFromIdsList(notificationId);
         foreach (var ntf in ntfs)
         {
             folder.NotificationsList.Remove(ntf);
         }
+        await _folderRepository.UpdateFolderAsync(folder);
 
         return NoContent();
     }
