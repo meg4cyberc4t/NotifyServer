@@ -24,7 +24,7 @@ public class FolderController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<NotifyFolderDetailed>>> GetMyFolders()
+    public async Task<ActionResult<IEnumerable<NotifyFolderQuick>>> GetMyFolders()
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folders = await _folderRepository.GetFoldersAsync(user);
@@ -51,7 +51,7 @@ public class FolderController : Controller
     }
 
     [HttpGet("{id:guid}/notifications", Name = "GetNotificationsByFolder")]
-    public async Task<ActionResult<IEnumerable<NotifyNotificationDetailed>>> GetNotificationsByFolder(Guid id)
+    public async Task<ActionResult<IEnumerable<NotifyNotificationQuick>>> GetNotificationsByFolder(Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folder = await _folderRepository.GetFolderAsync(id);
