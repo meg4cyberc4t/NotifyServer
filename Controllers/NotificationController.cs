@@ -28,24 +28,6 @@ public class NotificationController : Controller
         return Ok(ntfs.Select(e => e.ToNotifyNotificationQuick()));
     }
 
-    [HttpGet("{id:guid}", Name = "GetNotificationById")]
-    public async Task<ActionResult<NotifyNotificationDetailed>> Get(Guid id)
-    {
-        var user = (HttpContext.Items["User"] as NotifyUser)!;
-        var ntf = await _notificationRepository.GetNotificationAsync(id);
-        if (ntf == null)
-        {
-            return NotFound();
-        }
-
-        if (!ntf.Participants.Contains(user))
-        {
-            return Forbid();
-        }
-
-        return Ok(ntf.ToNotifyNotificationDetailed());
-    }
-
     [HttpGet("{id:guid}/participants", Name = "GetParticipantsById")]
     public async Task<ActionResult<IEnumerable<NotifyUserQuick>>> GetParticipantsById(Guid id)
     {
