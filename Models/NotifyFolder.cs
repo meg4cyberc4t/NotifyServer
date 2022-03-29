@@ -21,7 +21,7 @@ public record NotifyFolderDetailed(
     string Description,
     int ParticipantsCount,
     IEnumerable<NotifyNotificationQuick> Notifications,
-    NotifyUser Creator
+    NotifyUserQuick Creator
 );
 
 public class NotifyFolder
@@ -52,6 +52,6 @@ public class NotifyFolder
             Description: Description,
             ParticipantsCount: Participants.Count, 
             Notifications: NotificationsList.Select(e => e.ToNotifyNotificationQuick()), 
-            Creator: Creator);
+            Creator: Creator.ToNotifyUserQuick());
     }
 }
