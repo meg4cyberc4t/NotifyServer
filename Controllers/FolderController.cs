@@ -204,9 +204,9 @@ public class FolderController : Controller
         {
             var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
             if (ntf == null) continue;
-            if (!ntf.Folders.Contains(folder)) ntf.Folders.Add(folder);
-            await _notificationRepository.UpdateNotificationAsync(ntf);
+            folder.NotificationsList.Remove(ntf);
         }
+        await _folderRepository.UpdateFolderAsync(folder);
         return NoContent();
     }
 
@@ -229,9 +229,9 @@ public class FolderController : Controller
         {
             var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
             if (ntf == null) continue;
-            if (ntf.Folders.Contains(folder)) ntf.Folders.Remove(folder);
-            await _notificationRepository.UpdateNotificationAsync(ntf);
+            folder.NotificationsList.Remove(ntf);
         }
+        await _folderRepository.UpdateFolderAsync(folder);
         return NoContent();
     }
 }
