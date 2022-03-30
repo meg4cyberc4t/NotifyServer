@@ -39,7 +39,7 @@ public record NotifyNotificationDetailed(
     DateTime Deadline,
     int ParticipantsCount,
     NotifyUserQuick Creator,
-    NotifyFolderQuick? Folder,
+    IEnumerable<NotifyFolderQuick> Folders,
     int UniqueClaim
 );
 
@@ -57,7 +57,7 @@ public class NotifyNotification
 
     public int UniqueClaim { get; init; }
 
-    public NotifyFolder? Folder { get; set; }
+    public ICollection<NotifyFolder> Folders { get; set; } =  null!;
 
     public NotifyNotificationDetailed ToNotifyNotificationDetailed()
     {
@@ -71,7 +71,7 @@ public class NotifyNotification
             Creator: Creator.ToNotifyUserQuick(),
             UniqueClaim: UniqueClaim,
             ParticipantsCount: Participants.Count,
-            Folder: Folder?.ToNotifyFolderQuick()
+            Folders: Folders.Select(e => e.ToNotifyFolderQuick())
         );
     }
 

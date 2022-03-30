@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NotifyServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220329115553_InitialMigration")]
+    [Migration("20220330180248_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,21 @@ namespace NotifyServer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("NotifyFolderNotifyNotification", b =>
+                {
+                    b.Property<Guid>("FoldersId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("NotificationsListId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("FoldersId", "NotificationsListId");
+
+                    b.HasIndex("NotificationsListId");
+
+                    b.ToTable("NotifyFolderNotifyNotification");
+                });
 
             modelBuilder.Entity("NotifyFolderNotifyUser", b =>
                 {
@@ -94,9 +109,6 @@ namespace NotifyServer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("FolderId")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("Important")
                         .HasColumnType("boolean");
 
@@ -113,8 +125,6 @@ namespace NotifyServer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("FolderId");
 
                     b.ToTable("Notifications");
                 });
@@ -167,6 +177,21 @@ namespace NotifyServer.Migrations
                     b.ToTable("NotifyUserNotifyUser");
                 });
 
+            modelBuilder.Entity("NotifyFolderNotifyNotification", b =>
+                {
+                    b.HasOne("NotifyServer.Models.NotifyFolder", null)
+                        .WithMany()
+                        .HasForeignKey("FoldersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NotifyServer.Models.NotifyNotification", null)
+                        .WithMany()
+                        .HasForeignKey("NotificationsListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NotifyFolderNotifyUser", b =>
                 {
                     b.HasOne("NotifyServer.Models.NotifyFolder", null)
@@ -216,13 +241,7 @@ namespace NotifyServer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NotifyServer.Models.NotifyFolder", "Folder")
-                        .WithMany("NotificationsList")
-                        .HasForeignKey("FolderId");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Folder");
                 });
 
             modelBuilder.Entity("NotifyUserNotifyUser", b =>
@@ -238,11 +257,6 @@ namespace NotifyServer.Migrations
                         .HasForeignKey("SubscriptionsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("NotifyServer.Models.NotifyFolder", b =>
-                {
-                    b.Navigation("NotificationsList");
                 });
 
             modelBuilder.Entity("NotifyServer.Models.NotifyUser", b =>

@@ -187,7 +187,7 @@ public class FolderController : Controller
     }
 
     [HttpPost("{id:guid}/add_notification")]
-    public async Task<ActionResult> Add([FromQuery][Required] List<Guid> notificationId, Guid id)
+    public async Task<ActionResult> Add([FromQuery][Required] List<Guid> notificationIds, Guid id)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folder = await _folderRepository.GetFolderAsync(id);
@@ -200,18 +200,18 @@ public class FolderController : Controller
         {
             return Forbid();
         }
-
-        var ntfs = _notificationRepository.GetNotificationsFromIdsList(notificationId);
-        foreach (var notifyNotification in ntfs)
+        foreach (var notificationId in notificationIds)
         {
-            folder.NotificationsList.Add(notifyNotification);
+            var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
+            if (ntf == null) continue;
+            if (!ntf.Folders.Contains(folder)) ntf.Folders.Add(folder);
+            await _notificationRepository.UpdateNotificationAsync(ntf);
         }
-        await _folderRepository.UpdateFolderAsync(folder);
         return NoContent();
     }
 
     [HttpPost("{id:guid}/remove_notification")]
-    public async Task<ActionResult> Remove(Guid id, [FromQuery] List<Guid> notificationId)
+    public async Task<ActionResult> Remove(Guid id, [FromQuery] List<Guid> notificationIds)
     {
         var user = (HttpContext.Items["User"] as NotifyUser)!;
         var folder = await _folderRepository.GetFolderAsync(id);
@@ -225,13 +225,13 @@ public class FolderController : Controller
             return Forbid();
         }
 
-        var ntfs = _notificationRepository.GetNotificationsFromIdsList(notificationId);
-        foreach (var ntf in ntfs)
+        foreach (var notificationId in notificationIds)
         {
-            folder.NotificationsList.Remove(ntf);
+            var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
+            if (ntf == null) continue;
+            if (ntf.Folders.Contains(folder)) ntf.Folders.Remove(folder);
+            await _notificationRepository.UpdateNotificationAsync(ntf);
         }
-        await _folderRepository.UpdateFolderAsync(folder);
-
         return NoContent();
     }
 }
