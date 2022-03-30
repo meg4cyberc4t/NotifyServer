@@ -52,6 +52,6 @@ public class SearchController : ControllerBase
             return BadRequest();
         }
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        return Ok(_search.FromFoldersQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Select(e => e.ToNotifyFolderQuick()));
+        return Ok(_search.FromFoldersQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Include(e => e.NotificationsList).Select(e => e.ToNotifyFolderQuick()));
     }
 }
