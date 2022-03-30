@@ -63,7 +63,6 @@ public class NotificationController : Controller
             Important = input.Important,
             Participants = new List<NotifyUser>() {user},
             UniqueClaim = new Random().Next(),
-            Folders = {},
         };
         await _notificationRepository.CreateNotificationAsync(ntf);
         return Ok(ntf.ToNotifyNotificationDetailed());

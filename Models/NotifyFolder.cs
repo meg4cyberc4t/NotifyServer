@@ -30,7 +30,7 @@ public class NotifyFolder
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;
     public ICollection<NotifyUser> Participants { get; init; } = null!;
-    public ICollection<NotifyNotification> NotificationsList { get; init; } = null!;
+    public ICollection<NotifyNotification> NotificationsList { get; init; } =  new List<NotifyNotification>();
     public NotifyUser Creator { get; init; } = null!;
 
     public NotifyFolderQuick ToNotifyFolderQuick()
