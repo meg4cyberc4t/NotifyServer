@@ -204,7 +204,7 @@ public class FolderController : Controller
         {
             var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
             if (ntf == null) continue;
-            folder.NotificationsList.Remove(ntf);
+            folder.NotificationsList.Add(ntf);
         }
         await _folderRepository.UpdateFolderAsync(folder);
         return NoContent();
@@ -224,7 +224,6 @@ public class FolderController : Controller
         {
             return Forbid();
         }
-
         foreach (var notificationId in notificationIds)
         {
             var ntf = await _notificationRepository.GetNotificationAsync(notificationId);
