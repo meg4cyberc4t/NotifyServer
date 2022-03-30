@@ -45,13 +45,13 @@ public class SearchController : ControllerBase
     }
 
     [HttpGet("from_folders", Name = "SearchFromFolders")]
-    public ActionResult<IEnumerable<NotifyFolderDetailed>> SearchFromFolders([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    public ActionResult<IEnumerable<NotifyFolderQuick>> SearchFromFolders([FromQuery][Required] string pattern, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         if (pattern.Length == 0 || offset < 0 || limit > 100)
         {
             return BadRequest();
         }
         var user = (HttpContext.Items["User"] as NotifyUser)!;
-        return Ok(_search.FromFoldersQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Select(e => e.ToNotifyFolderDetailed()));
+        return Ok(_search.FromFoldersQuery(pattern, limit: limit, offset: offset).Include(e => e.Participants).Where(e => e.Creator == user || e.Participants.Contains(user)).Select(e => e.ToNotifyFolderQuick()));
     }
 }
