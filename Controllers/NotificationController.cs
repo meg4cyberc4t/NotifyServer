@@ -83,15 +83,14 @@ public class NotificationController : Controller
             return Forbid();
         }
 
-        if (notification.Creator.Id == user.Id)
+        if (notification.Creator.Id != user.Id)
         {
             notification.Participants.Remove(user);
             await _notificationRepository.UpdateNotificationAsync(notification);
+            return NoContent();
         }
-        else
-        {
-            await _notificationRepository.DeleteNotificationAsync(notification);
-        }
+        
+        await _notificationRepository.DeleteNotificationAsync(notification);
         return NoContent();
     }
 

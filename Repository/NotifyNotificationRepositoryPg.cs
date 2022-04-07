@@ -56,6 +56,13 @@ public class NotifyNotificationRepositoryPg : INotifyNotificationRepository
     public async Task DeleteNotificationAsync(NotifyNotification ntf)
     {
         _context.Notifications.Remove(ntf);
+        foreach (var notifyFolder in ntf.Folders)
+        {
+            var folder = await _context.Folders.FirstOrDefaultAsync(e => e.Id == notifyFolder.Id);
+            if (folder == null) return;
+            folder.NotificationsList.Remove(ntf);
+            _context.Folders.Update(folder);
+        }
         await _context.SaveChangesAsync();
     }
 }
